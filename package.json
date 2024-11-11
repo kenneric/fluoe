@@ -13,8 +13,8 @@
     "@babel/preset-react": "latest",
     "@emotion/cache": "latest",
     "@emotion/react": "latest",
-    "@emotion/styled": "latest",
     "@emotion/server": "latest",
+    "@emotion/styled": "latest",
     "@mui/material": "latest",
     "babel-loader": "latest",
     "cross-env": "latest",
@@ -31,6 +31,11 @@
     "build": "webpack -w",
     "serve": "nodemon --ignore ./build --exec babel-node -- server.js",
     "production": "cross-env NODE_ENV=production npm start",
-    "post-update": "echo \"codesandbox preview only, need an update\" && pnpm update --latest"
+    "post-update": "echo \"codesandbox preview only, need an update\" && pnpm update --latest",
+    "cypress": "cypress run"
+  },
+  "devDependencies": {
+    "cypress": "^13.15.2",
+    "cypress-mochawesome-reporter": "^3.8.2"
   }
 }

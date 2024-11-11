@@ -61,6 +61,24 @@ const app = express();
 
 app.use('/build', express.static('build'));
 
+app.get('/test', (req, res) => {
+  const cypress = require('cypress')
+
+  cypress.run({
+    spec: 'cypress/e2e/2-advanced-examples/actions.cy.js',
+    reporter: 'cypress-mochawesome-reporter',
+    browser: 'chrome',
+    config: {
+      baseUrl: 'http://localhost:3000',
+      video: true,
+    },
+    env: {
+    },
+  }).then(results => {
+    res.send(results);
+  });
+})
+
 // This is fired every time the server-side receives a request.
 app.use(handleRender);
 
