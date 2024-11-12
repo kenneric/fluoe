@@ -8,6 +8,7 @@ import createEmotionServer from '@emotion/server/create-instance';
 import createEmotionCache from './createEmotionCache';
 import App from './App';
 import theme from './theme';
+import path from 'path';
 
 function renderFullPage(html, css) {
   return `
@@ -59,28 +60,32 @@ function handleRender(req, res) {
 
 const app = express();
 
-app.use('/build', express.static('build'));
+// app.use('/build', express.static('build'));
 
 app.get('/test', (req, res) => {
   const cypress = require('cypress')
 
   cypress.run({
-    spec: 'cypress/e2e/2-advanced-examples/actions.cy.js',
+    spec: 'cypress/e2e/2-advanced-examples/aliasing.cy.js',
     reporter: 'cypress-mochawesome-reporter',
     browser: 'chrome',
     config: {
       baseUrl: 'http://localhost:3000',
-      video: true,
+      video: false,
     },
     env: {
     },
   }).then(results => {
-    res.send(results);
+    res.sendFile(path.join(__dirname, 'cypress/reports/html/index.html'));
   });
-})
+});
+
+app.get('/result', (req, res) => {
+    res.sendFile(path.join(__dirname, 'cypress/reports/html/index.html'));
+});
 
 // This is fired every time the server-side receives a request.
-app.use(handleRender);
+// app.use(handleRender);
 
 const port = 3000;
 app.listen(port, () => {
