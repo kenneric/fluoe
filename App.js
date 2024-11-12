@@ -24,6 +24,19 @@ function Copyright() {
   );
 }
 
+function launchTests() {
+  // Send data to the backend via POST
+  fetch('/test', {  // Enter your IP address here
+    method: 'POST',
+    mode: 'cors',
+    // body: JSON.stringify(jsonData) // body data type must match "Content-Type" header
+  }).then(response => {
+    if (response.status === 200) {
+      window.location.href = '/results/';
+    }
+  })
+}
+
 export default function App() {
   return (
     <Container maxWidth="sm">
@@ -31,6 +44,15 @@ export default function App() {
         <Typography variant="h4" component="h1" sx={{ mb: 2 }}>
           Fluoe - Tailored Test Automation
         </Typography>
+        <div onClick={launchTests} style={{
+          textAlign: 'center',
+          width: '200px',
+          border: '1px solid gray',
+          cursor: 'pointer',
+          borderRadius: '5px'
+        }}>
+          Start tests
+        </div>
         <ProTip />
         <Copyright />
       </Box>
