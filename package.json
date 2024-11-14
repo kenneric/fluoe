@@ -22,7 +22,6 @@
     "nodemon": "latest",
     "npm-run-all": "latest",
     "react": "latest",
-    "react-dom": "latest",
     "webpack": "latest",
     "webpack-cli": "latest"
   },

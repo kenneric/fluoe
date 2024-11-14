@@ -9,6 +9,7 @@ import createEmotionCache from './createEmotionCache';
 import App from './App';
 import theme from './theme';
 import cypress from 'cypress';
+import { exec } from 'node:child_process';
 
 function renderFullPage(html, css) {
   return `
@@ -63,7 +64,7 @@ const app = express();
 app.use('/build', express.static('build'));
 app.use('/results', express.static(__dirname + '/cypress/reports/html'));
 
-app.post('/test', (req, res) => {  
+app.post('/v1', (req, res) => {
   cypress.run({
     spec: 'cypress/e2e/2-advanced-examples/aliasing.cy.js',
     reporter: 'cypress-mochawesome-reporter',
@@ -77,6 +78,36 @@ app.post('/test', (req, res) => {
   }).then(() => {
     res.status(200).send();
   });
+});
+
+let cypressChild = null;
+let cypressOutput = '';
+let cypressIsRunning = false;
+
+let progress = ['started', 'running tests', 'complete'];
+
+app.post('/v2', (req, res) => {
+  if (!cypressIsRunning) {
+    cypressIsRunning = true;
+    cypressOutput = '';
+
+    cypressChild = exec('NO_COLOR=1 cypress run --spec cypress/e2e/2-advanced-examples/aliasing.cy.js --reporter cypress-mochawesome-reporter');
+    cypressChild.stdout.setEncoding('utf8');
+    cypressChild.stdout.on('data', function (data) {
+      cypressOutput += data;
+    });
+    cypressChild.on('close', function (code) {
+      cypressIsRunning = false;
+    });
+    res.status(200).send();
+  }
+  else {
+    res.status(400).send();
+  }
+});
+
+app.get('/test/progress', (req, res) => {
+  res.json({ output: cypressOutput, progressLevel: 0, inProgress: cypressIsRunning });
 });
 
 // This is fired every time the server-side receives a request.
