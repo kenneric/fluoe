@@ -1,14 +1,7 @@
 import express from 'express';
 import * as React from 'react';
 import * as ReactDOMServer from 'react-dom/server';
-import CssBaseline from '@mui/material/CssBaseline';
-import { ThemeProvider } from '@mui/material/styles';
-import { CacheProvider } from '@emotion/react';
-import createEmotionServer from '@emotion/server/create-instance';
-import createEmotionCache from './createEmotionCache';
 import App from './App';
-import theme from './theme';
-import cypress from 'cypress';
 import { exec } from 'node:child_process';
 
 function renderFullPage(html, css) {
@@ -37,26 +30,13 @@ function renderFullPage(html, css) {
 }
 
 function handleRender(req, res) {
-  const cache = createEmotionCache();
-  const { extractCriticalToChunks, constructStyleTagsFromChunks } = createEmotionServer(cache);
-
   // Render the component to a string.
   const html = ReactDOMServer.renderToString(
-    <CacheProvider value={cache}>
-      <ThemeProvider theme={theme}>
-        {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-        <CssBaseline />
-        <App />
-      </ThemeProvider>
-    </CacheProvider>,
+    <App />
   );
 
-  // Grab the CSS from emotion
-  const emotionChunks = extractCriticalToChunks(html);
-  const emotionCss = constructStyleTagsFromChunks(emotionChunks);
-
   // Send the rendered page back to the client.
-  res.send(renderFullPage(html, emotionCss));
+  res.send(renderFullPage(html));
 }
 
 const app = express();
@@ -64,40 +44,35 @@ const app = express();
 app.use('/build', express.static('build'));
 app.use('/results', express.static(__dirname + '/cypress/reports/html'));
 
-app.post('/v1', (req, res) => {
-  cypress.run({
-    spec: 'cypress/e2e/2-advanced-examples/aliasing.cy.js',
-    reporter: 'cypress-mochawesome-reporter',
-    browser: 'chrome',
-    config: {
-      baseUrl: 'http://localhost:3000',
-      video: false,
-    },
-    env: {
-    },
-  }).then(() => {
-    res.status(200).send();
-  });
-});
-
+let status = ['waiting', 'started', 'running', 'completed' ,'stopped'];
+let testStatus = status[0];
 let cypressChild = null;
 let cypressOutput = '';
-let cypressIsRunning = false;
+let exitCode = '';
+const controller = new AbortController();
+const { signal } = controller;
 
-let progress = ['started', 'running tests', 'complete'];
-
-app.post('/v2', (req, res) => {
-  if (!cypressIsRunning) {
-    cypressIsRunning = true;
+app.post('/test/start', (req, res) => {
+  if (testStatus === status[0]) {
     cypressOutput = '';
+    testStatus = status[1];
 
-    cypressChild = exec('NO_COLOR=1 cypress run --spec cypress/e2e/2-advanced-examples/aliasing.cy.js --reporter cypress-mochawesome-reporter');
+    cypressChild = exec('NO_COLOR=1 cypress run --spec cypress/e2e/2-advanced-examples/actions.cy.js --reporter cypress-mochawesome-reporter', { signal }, (error) => {
+      console.error(error); // an AbortError
+    });
     cypressChild.stdout.setEncoding('utf8');
     cypressChild.stdout.on('data', function (data) {
       cypressOutput += data;
+      if (data.includes('✓')) {
+        testStatus = status[2];
+      }
+      if (data.includes('Running')) {
+        testStatus = status[2];
+      }
     });
     cypressChild.on('close', function (code) {
-      cypressIsRunning = false;
+      testStatus = status[3];
+      exitCode = code;
     });
     res.status(200).send();
   }
@@ -106,8 +81,21 @@ app.post('/v2', (req, res) => {
   }
 });
 
+app.post('/test/abort', (req, res) => {
+  console.log(testStatus);
+  if (['started', 'running'].includes(testStatus)) {
+    testStatus = 'stopped';
+    exitCode = 1;
+    controller.abort();
+    res.status(200).send();
+  }
+  else {
+    res.status(400).send();
+  }
+});
+
 app.get('/test/progress', (req, res) => {
-  res.json({ output: cypressOutput, progressLevel: 0, inProgress: cypressIsRunning });
+  res.json({ output: cypressOutput, testStatus: testStatus, exitCode: exitCode });
 });
 
 // This is fired every time the server-side receives a request.

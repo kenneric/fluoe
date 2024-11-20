@@ -1,19 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { MoonLoader } from 'react-spinners';
-// import ansiHTML from 'ansi-html';
 
 const TestProgress = () => {
-    const [output, setOutput] = useState('');
     const [outputLines, setOutputLines] = useState([]);
-    const [progressLevel, setProgressLevel] = useState(0);
-    const [inProgress, setInProgress] = useState(false);
+    const [testStatus, setTestStatus] = useState('');
+    const [exitCode, setExitCode] = useState('');
 
     let intervalID;
 
     useEffect(() => {
-        intervalID = setInterval(() => {
-            fetchData();
-        }, 1000);
+            intervalID = setInterval(() => {
+                fetchData();
+            }, 2000);
     }, []);
 
     const fetchData = async () => {
@@ -21,11 +19,11 @@ const TestProgress = () => {
             const response = await fetch('/test/progress');
             const data = await response.json();
 
-            setOutput(data.output);
             setOutputLines(data.output.split('\n'));
-            setProgressLevel(data.progressLevel);
-            setInProgress(data.inProgress);
-            if (!data.inProgress) {
+            setTestStatus(data.testStatus);
+            console.log(exitCode);
+            setExitCode(data.exitCode);
+            if (testStatus === 'completed' || testStatus === 'stopped') {
                 clearInterval(intervalID);
             }
         } catch (error) {
@@ -35,14 +33,14 @@ const TestProgress = () => {
 
     return (
         <div>
-            {inProgress && <MoonLoader />}
-            <p>{`${inProgress ? 'Test is running...' : 'Test is not running'}`}</p>
-            <p>{`${progressLevel}%`}</p>
-            <div style={{ height: '400px', overflow: 'auto', display: 'flex', flexDirection: 'column-reverse', }}>
+            {['started', 'running'].includes(testStatus) && <MoonLoader />}
+            <p>{`Status: ${testStatus}`}</p>
+            <p>{`Exit code: ${exitCode || '...'}`}</p>
+            <div style={{ height: '400px', width: '900px', color: 'white', backgroundImage: 'linear-gradient(#f323f4, #1299f6)', padding: '10px', borderRadius: '3px', border: '5px solid #f323f4', overflow: 'scroll', display: 'flex', flexDirection: 'column-reverse', }}>
                 <div >
                     {outputLines.map((line, k) => (
                         <div>
-                            <tt key={k} style={{ whiteSpace: 'pre' }} sx={{ color: 'text.secondary', }}>{line}</tt><br />
+                            <tt key={k} style={{ whiteSpace: 'pre' }}>{line}</tt><br />
                         </div>
                     ))}
                 </div>
