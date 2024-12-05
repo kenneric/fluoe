@@ -19,9 +19,9 @@ function renderFullPage(html) {
           href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"
         />
       </head>
-      <body>
+      <body style="margin: 0px; padding: 0px; background: #8EB486; overflow-x:hidden">
         <script async src="build/bundle.js"></script>
-        <div id="root">${html}</div>
+        <div id="root" style="">${html}</div>
       </body>
     </html>
   `;
