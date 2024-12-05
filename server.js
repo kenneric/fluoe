@@ -18,7 +18,6 @@ function renderFullPage(html) {
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"
         />
-        <meta name="emotion-insertion-point" content="" />
       </head>
       <body>
         <script async src="build/bundle.js"></script>
