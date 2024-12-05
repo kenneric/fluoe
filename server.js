@@ -80,7 +80,6 @@ app.post('/test/start', (req, res) => {
 });
 
 app.post('/test/abort', (req, res) => {
-  console.log(testStatus);
   if (['started', 'running'].includes(testStatus)) {
     testStatus = 'stopped';
     exitCode = 1;
