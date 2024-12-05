@@ -42,7 +42,7 @@ export default function App() {
         }}>
           Abort
         </button>
-        <TestProgress/>
+        {testStarted && <TestProgress />}
         <div />
         <div />
       </div>

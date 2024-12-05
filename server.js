@@ -4,7 +4,7 @@ import * as ReactDOMServer from 'react-dom/server';
 import App from './App';
 import { exec } from 'node:child_process';
 
-function renderFullPage(html, css) {
+function renderFullPage(html) {
   return `
     <!DOCTYPE html>
     <html lang="en">
@@ -19,7 +19,6 @@ function renderFullPage(html, css) {
           href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"
         />
         <meta name="emotion-insertion-point" content="" />
-        ${css}
       </head>
       <body>
         <script async src="build/bundle.js"></script>
@@ -44,7 +43,7 @@ const app = express();
 app.use('/build', express.static('build'));
 app.use('/results', express.static(__dirname + '/cypress/reports/html'));
 
-let status = ['waiting', 'started', 'running', 'completed' ,'stopped'];
+let status = ['waiting', 'started', 'running', 'completed', 'stopped'];
 let testStatus = status[0];
 let cypressChild = null;
 let cypressOutput = '';
