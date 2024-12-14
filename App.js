@@ -13,8 +13,16 @@ const appStyle = {
 const headerStyle = {
   width: '100%',
   fontSize: '3em',
-  color: colorTheme.orange
+  color: colorTheme.orange,
+  textShadow: '0 0 3px #000',
+  paddingLeft: '40px'
 }
+
+const tests = [
+  {
+    name: "Test 1",
+  }
+];
 
 export default function App() {
   return (

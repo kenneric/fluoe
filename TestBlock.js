@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import colorTheme from './colorTheme';
 
 const TestBlockStyle = {
     display: 'flex',
     flexDirection: 'row',
-    justifyItems: 'center',
-    alignItems: 'center',
-    minHeight: '400px',
+    justifyContent: 'space-evenly',
+    minHeight: '200px',
 }
 
 const controlPanelStyle = {
@@ -15,7 +14,7 @@ const controlPanelStyle = {
     alignItems: 'center',
     justifyItems: 'center',
     padding: '20px',
-    height: '400px',
+    height: '200px',
     background: colorTheme.black,
     border: `3px solid ${colorTheme.orange}`,
 }
@@ -49,7 +48,7 @@ const statusStyle = {
 }
 
 const terminalStyle = {
-    height: '400px',
+    height: '200px',
     width: '840px',
     padding: '20px',
     background: colorTheme.black,
@@ -67,33 +66,32 @@ const lineStyle = {
     color: colorTheme.white,
 }
 
+const infoBlockStyle = {
+
+}
+
 const TestBlock = () => {
-    const [testStarted, setTestStarted] = useState(false);
     const [outputLines, setOutputLines] = useState([]);
     const [testStatus, setTestStatus] = useState('');
     const [exitCode, setExitCode] = useState('');
 
-    let intervalID;
+    let intervalID = 0;
 
     function launchTests() {
-        setTestStarted(true);
         fetch('/test/start', {
             method: 'POST',
             mode: 'cors',
         });
+        if (intervalID === 0) {
+            const id = setInterval(() => {
+                fetchData();
+            }, 2000);
+
+            intervalID = id;
+
+            console.log('id set', intervalID)
+        }
     }
-
-    function abortTests() {
-        setTestStarted(false);
-        fetch('/test/abort', {
-            method: 'POST',
-            mode: 'cors',
-        });
-
-        // also stop requests for progress
-        clearInterval(intervalID);
-    }
-
 
     const fetchData = async () => {
         try {
@@ -106,27 +104,28 @@ const TestBlock = () => {
 
             if (['completed', 'stopped'].includes(data.testStatus)) {
                 clearInterval(intervalID);
+                intervalID = 0;
             }
         } catch (error) {
             console.error(error);
         }
     }
 
-    // start sending requests for progress
-    useEffect(() => {
-        intervalID = setInterval(() => {
-            fetchData();
-        }, 2000);
-    }, []);
+    function abortTests() {
+        fetch('/test/abort', {
+            method: 'POST',
+            mode: 'cors',
+        });
+        clearInterval(intervalID);
+        intervalID = 0;
+    }
 
     return (
         <div style={TestBlockStyle}>
+            <div style={infoBlockStyle}>
+                <h2 style={testNameStyle}>Test #1</h2>
+            </div>
             <div style={controlPanelStyle}>
-
-                <div>
-                    <h2 style={testNameStyle}>Test #1</h2>
-                </div>
-
                 <div>
                     <button onClick={launchTests} style={buttonStyle}>
                         Start
@@ -136,21 +135,18 @@ const TestBlock = () => {
                     </button>
                 </div>
 
-                <p disabled style={statusStyle}>{`${testStatus}`}</p>
+                <p disabled style={statusStyle}>{`${testStatus}...`}</p>
                 {exitCode &&
                     <p>{`Exit code: ${exitCode}`}</p>
                 }
             </div>
-
-            {testStarted &&
-                < div style={terminalStyle}>
-                    {outputLines.toReversed().map((line, k) => (
-                        <>
-                            <tt key={k} style={lineStyle}>{line}</tt><br />
-                        </>
-                    ))}
-                </div>
-            }
+            < div style={terminalStyle}>
+                {outputLines.toReversed().map((line, k) => (
+                    <>
+                        <tt key={k} style={lineStyle}>{line}</tt><br />
+                    </>
+                ))}
+            </div>
         </div >
     );
 }

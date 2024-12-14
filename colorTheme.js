@@ -5,4 +5,8 @@ const colorTheme = {
     orange: '#F29F58',
 }
 
+const basicBlockStyle = {
+
+}
+
 export default colorTheme;
