@@ -88,8 +88,6 @@ const TestBlock = () => {
             }, 2000);
 
             intervalID = id;
-
-            console.log('id set', intervalID)
         }
     }
 
