@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
-import TestBlock from './TestBlock'
-import colorTheme from './colorTheme'
+import React, { useState } from 'react';
+import TestBlock from './TestBlock';
+import colorTheme from './colorTheme';
 
 const appStyle = {
     height: '100%',
@@ -9,7 +9,7 @@ const appStyle = {
     fontSize: '1.5em',
     fontFamily: 'Asap',
     fontWeight: 300,
-}
+};
 
 const logoStyle = {
     fontSize: '4em',
@@ -18,12 +18,12 @@ const logoStyle = {
     paddingLeft: '40px',
     textShadow: `-1px -1px 0 ${colorTheme.black}, 1px -1px 0 ${colorTheme.black}, -1px 1px 0 ${colorTheme.black}, 1px 1px 0 ${colorTheme.black}`,
     margin: '0px',
-}
+};
 
 const newTestHeader = {
     fontSize: '1.3em',
     fontWeight: 300,
-}
+};
 
 const headerStyle = {
     width: '100vw',
@@ -34,40 +34,40 @@ const headerStyle = {
     alignItems: 'center',
     flexDirection: 'row',
     borderBottom: `1px solid ${colorTheme.black}`,
-}
+};
 
 const navStyle = {
     width: '100%',
     display: 'flex',
     justifyContent: 'space-evenly',
-}
+};
 
 const linkStyle = {
     color: 'inherit',
     textDecoration: 'none',
-}
+};
 
 const mainPageStyle = {
     marginTop: '80px',
-}
+};
 
 const selected = {
     textDecoration: 'underline',
     color: 'inherit',
     fontWeight: 300,
-}
+};
 
 export default function App() {
-    const [testName, setTestName] = useState('')
+    const [testName, setTestName] = useState('');
 
     function handleSubmit(event) {
-        event.preventDefault()
+        event.preventDefault();
 
         const requestBody = JSON.stringify({
             testName,
-        })
+        });
 
-        setTestName('')
+        setTestName('');
 
         fetch('/db', {
             method: 'POST',
@@ -75,7 +75,7 @@ export default function App() {
             headers: new Headers({
                 'Content-Type': 'application/json',
             }),
-        })
+        });
     }
 
     return (
@@ -112,5 +112,5 @@ export default function App() {
                 </form>
             </div>
         </div>
-    )
+    );
 }

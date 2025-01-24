@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import colorTheme from './colorTheme'
+import React, { useState } from 'react';
+import colorTheme from './colorTheme';
 
 const TestBlockStyle = {
     display: 'flex',
@@ -8,7 +8,7 @@ const TestBlockStyle = {
     minHeight: '200px',
     height: '200px',
     margin: '40px',
-}
+};
 
 const controlPanelStyle = {
     display: 'flex',
@@ -21,7 +21,7 @@ const controlPanelStyle = {
     border: `1px solid ${colorTheme.black}`,
     borderRight: `0px`,
     borderRadius: '5px 0px 0px 5px',
-}
+};
 
 const testNameStyle = {
     flex: 1,
@@ -30,7 +30,7 @@ const testNameStyle = {
     textAlign: 'center',
     color: colorTheme.white,
     margin: '5px',
-}
+};
 
 const buttonStyle = {
     textAlign: 'center',
@@ -46,7 +46,7 @@ const buttonStyle = {
     textTransform: 'capitalize',
     fontSize: '16px',
     fontFamily: 'inherit',
-}
+};
 
 const statusStyle = {
     textAlign: 'center',
@@ -55,7 +55,7 @@ const statusStyle = {
     textTransform: 'capitalize',
     color: colorTheme.white,
     flex: 2,
-}
+};
 
 const terminalStyle = {
     height: '200px',
@@ -69,67 +69,67 @@ const terminalStyle = {
     flexDirection: 'column-reverse',
     justifyItems: 'center',
     borderRadius: '0px 5px 5px 0px',
-}
+};
 
 const lineStyle = {
     whiteSpace: 'pre',
     fontSize: '14px',
     color: colorTheme.white,
-}
+};
 
 const buttonsSectionStyle = {
     width: '200px',
     display: 'flex',
     justifyContent: 'space-evenly',
-}
+};
 
 const TestBlock = () => {
-    const [outputLines, setOutputLines] = useState([])
-    const [testStatus, setTestStatus] = useState('')
-    const [exitCode, setExitCode] = useState('')
+    const [outputLines, setOutputLines] = useState([]);
+    const [testStatus, setTestStatus] = useState('');
+    const [exitCode, setExitCode] = useState('');
 
-    let intervalID = 0
+    let intervalID = 0;
 
     function launchTests() {
-        setTestStatus('Starting')
+        setTestStatus('Starting');
         fetch('/test/start', {
             method: 'POST',
             mode: 'cors',
-        })
+        });
         if (intervalID === 0) {
             const id = setInterval(() => {
-                fetchData()
-            }, 2000)
+                fetchData();
+            }, 2000);
 
-            intervalID = id
+            intervalID = id;
         }
     }
 
     const fetchData = async () => {
         try {
-            const response = await fetch('/test/progress')
-            const data = await response.json()
+            const response = await fetch('/test/progress');
+            const data = await response.json();
 
-            setOutputLines(data.output.split('\n'))
-            setTestStatus(data.testStatus)
-            setExitCode(data.exitCode)
+            setOutputLines(data.output.split('\n'));
+            setTestStatus(data.testStatus);
+            setExitCode(data.exitCode);
 
             if (['completed', 'stopped'].includes(data.testStatus)) {
-                clearInterval(intervalID)
-                intervalID = 0
+                clearInterval(intervalID);
+                intervalID = 0;
             }
         } catch (error) {
-            console.error(error)
+            console.error(error);
         }
-    }
+    };
 
     function abortTests() {
         fetch('/test/abort', {
             method: 'POST',
             mode: 'cors',
-        })
-        clearInterval(intervalID)
-        intervalID = 0
+        });
+        clearInterval(intervalID);
+        intervalID = 0;
     }
 
     return (
@@ -159,7 +159,7 @@ const TestBlock = () => {
                 ))}
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default TestBlock
+export default TestBlock;
