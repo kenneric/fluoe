@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import colorTheme from './colorTheme';
+import colorTheme from '../colorTheme';
 
 const TestBlockStyle = {
     display: 'flex',
@@ -83,7 +83,7 @@ const buttonsSectionStyle = {
     justifyContent: 'space-evenly',
 };
 
-const TestBlock = () => {
+export default function testPage() {
     const [outputLines, setOutputLines] = useState([]);
     const [testStatus, setTestStatus] = useState('');
     const [exitCode, setExitCode] = useState('');
@@ -160,6 +160,4 @@ const TestBlock = () => {
             </div>
         </div>
     );
-};
-
-export default TestBlock;
+}

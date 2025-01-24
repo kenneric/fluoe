@@ -119,12 +119,20 @@ app.get('/test/progress', (req, res) => {
 app.use(express.json());
 
 app.post('/db', async (req, res) => {
-    console.log(req.body.testName);
-    // Use connect method to connect to the server
     await client.connect();
-    console.log('Connected successfully to server');
     const db = client.db(dbName);
     const collection = db.collection('pages');
+
+    const newTestName = req.body.testName;
+
+    const query = { testName: newTestName };
+    const nameExists = (await collection.countDocuments(query)) !== 0;
+
+    if (!nameExists) {
+        await collection.insertOne({
+            testName: newTestName,
+        });
+    }
 
     res.status(200).send();
 });
