@@ -1,63 +1,74 @@
-import React, { useState } from 'react';
-import colorTheme from './colorTheme';
+import React, { useState } from 'react'
+import colorTheme from './colorTheme'
 
 const TestBlockStyle = {
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-evenly',
+    justifyContent: 'center',
     minHeight: '200px',
+    height: '200px',
+    margin: '40px',
 }
 
 const controlPanelStyle = {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    justifyItems: 'center',
-    padding: '20px',
+    padding: '10px',
     height: '200px',
-    background: colorTheme.black,
-    border: `3px solid ${colorTheme.orange}`,
+    width: '200px',
+    background: colorTheme.darkGreen,
+    border: `1px solid ${colorTheme.black}`,
+    borderRight: `0px`,
+    borderRadius: '5px 0px 0px 5px',
 }
 
 const testNameStyle = {
+    flex: 1,
     fontSize: '1.3em',
+    fontWeight: 300,
+    textAlign: 'center',
+    color: colorTheme.white,
+    margin: '5px',
 }
 
 const buttonStyle = {
     textAlign: 'center',
-    width: '100px',
+    width: '80px',
     justifySelf: 'middle',
-    height: '40px',
+    height: '30px',
     cursor: 'pointer',
-    borderRadius: '3px',
-    border: `2px solid ${colorTheme.orange}`,
+    borderRadius: '5px',
+    border: `1px solid ${colorTheme.black}`,
     padding: '5px',
-    background: '#685752',
-    color: colorTheme.white,
-    margin: '20px',
+    background: colorTheme.white,
+    color: colorTheme.black,
     textTransform: 'capitalize',
-    fontSize: '14px',
+    fontSize: '16px',
+    fontFamily: 'inherit',
 }
 
 const statusStyle = {
     textAlign: 'center',
     justifySelf: 'middle',
-    margin: '20px',
-    fontSize: '14px',
+    fontSize: '16px',
     textTransform: 'capitalize',
+    color: colorTheme.white,
+    flex: 2,
 }
 
 const terminalStyle = {
     height: '200px',
     width: '840px',
-    padding: '20px',
-    background: colorTheme.black,
-    border: `3px solid ${colorTheme.orange}`,
+    padding: '10px',
+    background: colorTheme.darkGreen,
+    border: `1px solid ${colorTheme.black}`,
     overflowX: 'hidden',
     overflowY: 'scroll',
     display: 'flex',
     flexDirection: 'column-reverse',
     justifyItems: 'center',
+    borderRadius: '0px 5px 5px 0px',
 }
 
 const lineStyle = {
@@ -66,46 +77,49 @@ const lineStyle = {
     color: colorTheme.white,
 }
 
-const infoBlockStyle = {
-
+const buttonsSectionStyle = {
+    width: '200px',
+    display: 'flex',
+    justifyContent: 'space-evenly',
 }
 
 const TestBlock = () => {
-    const [outputLines, setOutputLines] = useState([]);
-    const [testStatus, setTestStatus] = useState('');
-    const [exitCode, setExitCode] = useState('');
+    const [outputLines, setOutputLines] = useState([])
+    const [testStatus, setTestStatus] = useState('')
+    const [exitCode, setExitCode] = useState('')
 
-    let intervalID = 0;
+    let intervalID = 0
 
     function launchTests() {
+        setTestStatus('Starting')
         fetch('/test/start', {
             method: 'POST',
             mode: 'cors',
-        });
+        })
         if (intervalID === 0) {
             const id = setInterval(() => {
-                fetchData();
-            }, 2000);
+                fetchData()
+            }, 2000)
 
-            intervalID = id;
+            intervalID = id
         }
     }
 
     const fetchData = async () => {
         try {
-            const response = await fetch('/test/progress');
-            const data = await response.json();
+            const response = await fetch('/test/progress')
+            const data = await response.json()
 
-            setOutputLines(data.output.split('\n'));
-            setTestStatus(data.testStatus);
-            setExitCode(data.exitCode);
+            setOutputLines(data.output.split('\n'))
+            setTestStatus(data.testStatus)
+            setExitCode(data.exitCode)
 
             if (['completed', 'stopped'].includes(data.testStatus)) {
-                clearInterval(intervalID);
-                intervalID = 0;
+                clearInterval(intervalID)
+                intervalID = 0
             }
         } catch (error) {
-            console.error(error);
+            console.error(error)
         }
     }
 
@@ -113,40 +127,39 @@ const TestBlock = () => {
         fetch('/test/abort', {
             method: 'POST',
             mode: 'cors',
-        });
-        clearInterval(intervalID);
-        intervalID = 0;
+        })
+        clearInterval(intervalID)
+        intervalID = 0
     }
 
     return (
         <div style={TestBlockStyle}>
-            <div style={infoBlockStyle}>
-                <h2 style={testNameStyle}>Test #1</h2>
-            </div>
             <div style={controlPanelStyle}>
-                <div>
+                <h2 style={testNameStyle}>Test #1</h2>
+                <p style={statusStyle}>spec/newSpec.ts</p>
+                <p disabled style={statusStyle}>{`${testStatus}...`}</p>
+
+                <div style={buttonsSectionStyle}>
                     <button onClick={launchTests} style={buttonStyle}>
                         Start
                     </button>
                     <button onClick={abortTests} style={buttonStyle}>
-                        Abort
+                        Cancel
                     </button>
                 </div>
-
-                <p disabled style={statusStyle}>{`${testStatus}...`}</p>
-                {exitCode &&
-                    <p>{`Exit code: ${exitCode}`}</p>
-                }
             </div>
-            < div style={terminalStyle}>
+            <div style={terminalStyle}>
                 {outputLines.toReversed().map((line, k) => (
                     <>
-                        <tt key={k} style={lineStyle}>{line}</tt><br />
+                        <tt key={k} style={lineStyle}>
+                            {line}
+                        </tt>
+                        <br />
                     </>
                 ))}
             </div>
-        </div >
-    );
+        </div>
+    )
 }
 
-export default TestBlock;
+export default TestBlock

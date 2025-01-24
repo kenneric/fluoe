@@ -1,36 +1,38 @@
 {
-  "name": "fluoe",
-  "version": "1.0.0",
-  "private": true,
-  "browserslist": [
-    ">0.25%",
-    "not dead"
-  ],
-  "dependencies": {
-    "@babel/core": "latest",
-    "@babel/node": "latest",
-    "@babel/preset-env": "latest",
-    "@babel/preset-react": "latest",
-    "babel-loader": "latest",
-    "cross-env": "latest",
-    "express": "latest",
-    "nodemon": "latest",
-    "npm-run-all": "latest",
-    "react": "latest",
-    "webpack": "latest",
-    "webpack-cli": "latest"
-  },
-  "scripts": {
-    "start": "npm-run-all -p build serve",
-    "build": "webpack -w",
-    "serve": "nodemon --exec babel-node -- server.js",
-    "production": "cross-env NODE_ENV=production npm start",
-    "post-update": "echo \"codesandbox preview only, need an update\" && pnpm update --latest"
-  },
-  "devDependencies": {
-    "cypress": "^13.15.2",
-    "cypress-mochawesome-reporter": "^3.8.2",
-    "path": "^0.12.7",
-    "react-dom": "^19.0.0"
-  }
+    "name": "fluoe",
+    "version": "1.0.0",
+    "private": true,
+    "browserslist": [
+        ">0.25%",
+        "not dead"
+    ],
+    "dependencies": {
+        "@babel/core": "latest",
+        "@babel/node": "latest",
+        "@babel/preset-env": "latest",
+        "@babel/preset-react": "latest",
+        "babel-loader": "latest",
+        "cross-env": "latest",
+        "express": "latest",
+        "mongodb": "^6.12.0",
+        "nodemon": "latest",
+        "npm-run-all": "latest",
+        "react": "latest",
+        "webpack": "latest",
+        "webpack-cli": "latest"
+    },
+    "scripts": {
+        "start": "npm-run-all -p build serve",
+        "build": "webpack -w",
+        "serve": "nodemon --exec babel-node -- server.js",
+        "production": "cross-env NODE_ENV=production npm start",
+        "post-update": "echo \"codesandbox preview only, need an update\" && pnpm update --latest"
+    },
+    "devDependencies": {
+        "cypress": "^13.15.2",
+        "cypress-mochawesome-reporter": "^3.8.2",
+        "path": "^0.12.7",
+        "prettier": "3.4.2",
+        "react-dom": "^19.0.0"
+    }
 }
